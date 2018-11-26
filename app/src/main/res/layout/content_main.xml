@@ -8,11 +8,40 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/activity_main"
         tools:context=".MainActivity">
-
     <com.baidu.mapapi.map.MapView
             android:id="@+id/bmapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true" android:focusable="true"/>
-
+            android:clickable="true" android:focusable="true">
+    </com.baidu.mapapi.map.MapView>
+    <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <!--<LinearLayout-->
+                <!--android:orientation="vertical"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:background="@drawable/cycle"-->
+                <!--android:paddingBottom="100dp"-->
+                <!--android:layout_height="wrap_content">-->
+        <!--</LinearLayout>-->
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/location_padding_top"
+                app:srcCompat="@drawable/marker_default" android:id="@+id/locationPos"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <ImageView android:id="@+id/locationCycle"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:src="@drawable/cycle"
+            android:layout_height="wrap_content">
+        </ImageView>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

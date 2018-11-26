@@ -1,3 +1,6 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin_bottom">95dp</dimen>
+    <dimen name="fab_margin_right">1dp</dimen>
+    <dimen name="location_padding_top">32dp</dimen>
+    <dimen name="cycle_radius">32dp</dimen>
 </resources>

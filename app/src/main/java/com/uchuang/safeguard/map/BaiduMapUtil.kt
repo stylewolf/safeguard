@@ -9,9 +9,24 @@ import com.baidu.mapapi.SDKInitializer
 import com.baidu.mapapi.map.*
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.utils.CoordinateConverter
+import com.baidu.mapapi.map.MarkerOptions
+import com.baidu.mapapi.map.BitmapDescriptorFactory
 
 
-class BaiduMapUtil(val bmapView: MapView, val applicationContext: Context) {
+class BaiduMapUtil(val bmapView: MapView, val applicationContext: Context) : BaiduMap.OnMapStatusChangeListener {
+    override fun onMapStatusChangeStart(mapStatus: MapStatus) {
+    }
+
+    override fun onMapStatusChangeStart(p0: MapStatus?, p1: Int) {
+    }
+
+    override fun onMapStatusChange(mapStatus: MapStatus) {
+    }
+
+    override fun onMapStatusChangeFinish(mapStatus: MapStatus) {
+        println(""+mapStatus.target.longitude + ":" + mapStatus.target.latitude)
+        PoiSearchUtil.collect(mapStatus,this)
+    }
 
     //百度地图
     var baiduMap: BaiduMap? = null
@@ -19,6 +34,7 @@ class BaiduMapUtil(val bmapView: MapView, val applicationContext: Context) {
 
     companion object {
         var LOCATION: BDLocation? = null
+        var already: MutableList<Overlay> = ArrayList()
     }
     /**
      * 初始化定位参数配置
@@ -45,7 +61,7 @@ class BaiduMapUtil(val bmapView: MapView, val applicationContext: Context) {
         //可选，设置是否需要地址描述
         locationOption.setIsNeedLocationDescribe(true)
         //可选，设置是否需要设备方向结果
-        locationOption.setNeedDeviceDirect(false)
+        locationOption.setNeedDeviceDirect(true)
         //可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
         locationOption.isLocationNotify = true
         //可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
@@ -66,9 +82,10 @@ class BaiduMapUtil(val bmapView: MapView, val applicationContext: Context) {
         locationOption.setOpenAutoNotifyMode(3000, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT)
 
         //开始定位
-        if(locationClient?.isStarted!!.not()){
-            locationClient?.start()
-        }
+        locationClient?.start()
+
+        //地图状态改变相关接口
+        bmapView.map.setOnMapStatusChangeListener(this)
     }
 
     inner class BaiduMapListener : BDAbstractLocationListener() {
@@ -115,7 +132,7 @@ class BaiduMapUtil(val bmapView: MapView, val applicationContext: Context) {
         val desLatLng = converter.convert()
 
         val myLocationData = MyLocationData.Builder()
-            .accuracy(LOCATION!!.radius)
+            .accuracy(0f)
             .direction(LOCATION!!.direction)
             .latitude(desLatLng.latitude)
             .longitude(desLatLng.longitude)
@@ -125,5 +142,37 @@ class BaiduMapUtil(val bmapView: MapView, val applicationContext: Context) {
         val builder = MapStatus.Builder()
         builder.target(desLatLng).zoom(19.0f)
         baiduMap?.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()))
+    }
+
+    fun clearMarkers(){
+        if(!already.isEmpty()){
+            for (overlay in already){
+                overlay.remove()
+            }
+            already.clear()
+        }
+    }
+
+    /**
+     * 绘制marker
+     */
+    fun drawMarkers(markers : List<Marker>){
+        clearMarkers()
+        for (marker in markers.listIterator()) {
+            val bitmap = BitmapDescriptorFactory
+                .fromResource(marker.icon!!)
+            //构建MarkerOption，用于在地图上添加Marker
+            val option = MarkerOptions()
+                .position(marker.latLng)
+                .icon(bitmap)
+            //在地图上添加Marker，并显示
+            already.add(baiduMap!!.addOverlay(option))
+        }
+    }
+
+    fun drawMarker(marker:Marker){
+        var ms: MutableList<Marker> = ArrayList()
+        ms.add(marker)
+        drawMarkers(ms)
     }
 }

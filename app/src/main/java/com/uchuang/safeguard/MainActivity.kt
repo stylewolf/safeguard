@@ -8,7 +8,8 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import com.uchuang.safeguard.map.BaiduMapUtil
-
+import com.uchuang.safeguard.map.PoiSearchUtil
+import kotlinx.android.synthetic.main.content_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        //setSupportActionBar(toolbar)
         baiduMapUtil = BaiduMapUtil(bmapView,this)
         baiduMapUtil!!.initLocationOption()
 //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -32,6 +33,11 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         //sample_text.text = stringFromJNI()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PoiSearchUtil.destroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -61,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         // Used to load the 'native-lib' library on application startup.
         init {
             System.loadLibrary("native-lib")
-
         }
     }
 }
